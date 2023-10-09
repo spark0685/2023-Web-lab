@@ -1,3 +1,4 @@
+# coding=gb2312
 import csv
 import requests
 import re
@@ -140,15 +141,17 @@ class Movie_Crawler(object):
         with open(self.dest_filename,'a',encoding="utf_8_sig",newline='') as destFile:
             destFile_csv=csv.DictWriter(destFile,fieldnames=fieldname)
             for i in range(idnum,len(id_list)):
-                # if(self.status_code!=200):
-                #     with open(self.id_file,'w') as id_file:
-                #         id_file.write(str(i))
-                #         print("\nYour request has been denied\n")
-                #         return
                 self.url="https://movie.douban.com/subject/"+id_list[i]
+                print(self.url)
                 self.get_soup()
+                if(self.status_code!=200):
+                    with open(self.id_file,'w') as id_file:
+                        id_file.write(str(i))
+                        print("\nYour request has been denied\n")
+                        return
                 info_list.append(str(id_list[i]))
                 info_list.append(self.get_movie_name())
+                print (info_list)
                 # info_list.append(self.get_author_name())
                 # info_list.append(self.get_translator_name())
                 # info_list.append(self.get_pub_year())
