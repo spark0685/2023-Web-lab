@@ -8,14 +8,14 @@ with open('pl.csv', newline='', encoding='utf-8-sig') as csvfile:
     for row in reader:
         if input == row['term']:
 #            print(row[' docID'])
-            doc = row[' docID'].split('/')
+            doc = row[' docID']
             with open('Book.csv', newline='', encoding='utf-8-sig') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     if row['id'] in doc:
 #                        print(row['id'])
                         print(row['书名'])
-                        # print(row['作者'])
+                        print(row['作者'])
 #                        print(row['出版社'])
 #                        print(row['译者'])
 #                        print(row['出版年'])

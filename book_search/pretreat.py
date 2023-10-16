@@ -2,7 +2,7 @@ import jieba
 import csv
 
 
-punctuation = '，。！？、（）【】<>《》=：+-*—“”…\n\t[]'
+punctuation = '，。！？、（）【】<>《》=：+-*—“”…\n\t\r[]'
 def pretreat():
     with open('baidu_stopwords.txt', 'r', encoding='utf-8') as f:
         stop_words = f.read().split('\n')
