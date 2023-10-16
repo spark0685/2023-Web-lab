@@ -15,7 +15,7 @@ with open('pl.csv', newline='', encoding='utf-8-sig') as csvfile:
                     if row['id'] in doc:
 #                        print(row['id'])
                         print(row['书名'])
-                        print(row['作者'])
+                        # print(row['作者'])
 #                        print(row['出版社'])
 #                        print(row['译者'])
 #                        print(row['出版年'])
