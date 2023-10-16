@@ -45,15 +45,15 @@ class Movie_Crawler(object):
         with open(self.dest_filename,'a',encoding="utf_8_sig",newline='') as destFile:
             destFile_csv=csv.DictWriter(destFile,fieldnames=fieldname)
             for i in range(idnum,len(id_list)):
-                time.sleep(2)
+                time.sleep(0.1)
                 self.url="https://movie.douban.com/subject/"+id_list[i]
-                print(self.url)
                 soup = self.get_soup()
                 if(self.status_code!=200):
                     with open(self.id_file,'w') as id_file:
                         id_file.write(str(i))
                         print("\nYour request has been denied\n")
-                        return
+                        print('url:', self.url)
+                        continue
                 # 片名
                 name = soup.find(attrs={'property': 'v:itemreviewed'}).text.split(' ')[0]
                 # 上映年份
@@ -112,8 +112,11 @@ class Movie_Crawler(object):
                 info_list.append(language)
                 info_list.append(times)
                 info_list.append(summary)
-                print (i)
-                print (info_list)
+                print ('正在爬取第', i,'个电影')
+                print('url:', self.url)
+                print ('ID:',info_list[0])
+                print ('name:',info_list[1])
+                print ()
                 destFile_csv.writerow(
                     {
                         "id":info_list[0],
@@ -139,10 +142,10 @@ if __name__ =="__main__":
     url="https://.douban.com"
     movie=Movie_Crawler(filename=filename,dest_filename=dest_filename,id_file=id_file,url=url)
     flag="y"
-    print("Do you want to rewrite the csv file?\tprint[y/n]")
-    flag=input()
-    if(flag == 'y'):
-        movie.file_write_first()
+    # print("Do you want to rewrite the csv file?\tprint[y/n]")
+    # flag=input()
+    # if(flag == 'y'):
+    #     movie.file_write_first()
     movie.file_write()
         
     
