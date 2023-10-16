@@ -31,7 +31,7 @@ class Movie_Crawler(object):
         return self.soup
     def file_write_first(self):
         # fieldname=["id","书名","作者","出版社","译者","出版年","内容简介","作者简介","豆瓣评分"]
-        fieldname=["id","片名","上映年份","评分","评价人数","导演","编剧","主演","类型","国家/地区","语言","时长"]
+        fieldname=["id","片名","上映年份","评分","评价人数","导演","编剧","主演","类型","国家/地区","语言","时长","简介"]
         with open(self.dest_filename,'w',encoding="utf_8_sig",newline='') as destFile:
             destFile_csv=csv.DictWriter(destFile,fieldnames=fieldname)
             destFile_csv.writeheader()
@@ -39,12 +39,13 @@ class Movie_Crawler(object):
         info_list=[]
         id_list=self.load_id()
         # fieldname=["id","书名","作者","出版社","译者","出版年","内容简介","作者简介","豆瓣评分"]
-        fieldname=["id","片名","上映年份","评分","评价人数","导演","编剧","主演","类型","国家/地区","语言","时长"]
+        fieldname=["id","片名","上映年份","评分","评价人数","导演","编剧","主演","类型","国家/地区","语言","时长","简介"]
         with open(self.id_file,'r') as id_file:
             idnum=int(id_file.read())
         with open(self.dest_filename,'a',encoding="utf_8_sig",newline='') as destFile:
             destFile_csv=csv.DictWriter(destFile,fieldnames=fieldname)
             for i in range(idnum,len(id_list)):
+                time.sleep(2)
                 self.url="https://movie.douban.com/subject/"+id_list[i]
                 print(self.url)
                 soup = self.get_soup()
@@ -58,9 +59,17 @@ class Movie_Crawler(object):
                 # 上映年份
                 year = soup.find(attrs={'class': 'year'}).text.replace('(','').replace(')','')
                 # 评分
-                score = soup.find(attrs={'property': 'v:average'}).text
+                score0 = soup.find(attrs={'property': 'v:average'})
+                if score0 is None:
+                    score = '无'
+                else :
+                    score = score0.text
                 # 评价人数
-                votes = soup.find(attrs={'property': 'v:votes'}).text
+                votes0 = soup.find(attrs={'property': 'v:votes'})
+                if votes0 is None:
+                    votes = '无'
+                else:
+                    votes = votes0.text
                 infos = soup.find(attrs={'id': 'info'}).text.split('\n')[1:11]
                 # 导演
                 director = infos[0].split(': ')[1]
@@ -83,8 +92,13 @@ class Movie_Crawler(object):
                 if '戛纳' in area:
                     area = '法国'
                 # 时长
-                times0 = soup.find(attrs={'property': 'v:runtime'}).text
-                times = re.findall('\d+', times0)[0]
+                times0 = soup.find(attrs={'property': 'v:runtime'})
+                if times0 is None:
+                    times = '无'
+                else:
+                    times = re.findall('\d+', times0.text)[0]
+                # 简介
+                summary = soup.find(attrs={'property': 'v:summary'}).text
                 info_list.append(str(id_list[i]))
                 info_list.append(name)
                 info_list.append(year)
@@ -97,6 +111,8 @@ class Movie_Crawler(object):
                 info_list.append(area)
                 info_list.append(language)
                 info_list.append(times)
+                info_list.append(summary)
+                print (i)
                 print (info_list)
                 destFile_csv.writerow(
                     {
@@ -111,7 +127,8 @@ class Movie_Crawler(object):
                         "类型":info_list[8],
                         "国家/地区":info_list[9],
                         "语言":info_list[10],
-                        "时长":info_list[11]
+                        "时长":info_list[11],
+                        "简介":info_list[12]
                     }
                 )
                 info_list.clear()
