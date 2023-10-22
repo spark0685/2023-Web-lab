@@ -30,16 +30,16 @@ class Movie_Crawler(object):
         self.soup=BeautifulSoup(content,"html.parser")
         return self.soup
     def file_write_first(self):
-        # fieldname=["id","ÊéÃû","×÷Õß","³ö°æÉç","ÒëÕß","³ö°æÄê","ÄÚÈİ¼ò½é","×÷Õß¼ò½é","¶¹°êÆÀ·Ö"]
-        fieldname=["id","Æ¬Ãû","ÉÏÓ³Äê·İ","ÆÀ·Ö","ÆÀ¼ÛÈËÊı","µ¼Ñİ","±à¾ç","Ö÷Ñİ","ÀàĞÍ","¹ú¼Ò/µØÇø","ÓïÑÔ","Ê±³¤","¼ò½é"]
+        # fieldname=["id","ä¹¦å","ä½œè€…","å‡ºç‰ˆç¤¾","è¯‘è€…","å‡ºç‰ˆå¹´","å†…å®¹ç®€ä»‹","ä½œè€…ç®€ä»‹","è±†ç“£è¯„åˆ†"]
+        fieldname=["id","ç‰‡å","ä¸Šæ˜ å¹´ä»½","è¯„åˆ†","è¯„ä»·äººæ•°","å¯¼æ¼”","ç¼–å‰§","ä¸»æ¼”","ç±»å‹","å›½å®¶/åœ°åŒº","è¯­è¨€","æ—¶é•¿","ç®€ä»‹"]
         with open(self.dest_filename,'w',encoding="utf_8_sig",newline='') as destFile:
             destFile_csv=csv.DictWriter(destFile,fieldnames=fieldname)
             destFile_csv.writeheader()
     def file_write(self):
         info_list=[]
         id_list=self.load_id()
-        # fieldname=["id","ÊéÃû","×÷Õß","³ö°æÉç","ÒëÕß","³ö°æÄê","ÄÚÈİ¼ò½é","×÷Õß¼ò½é","¶¹°êÆÀ·Ö"]
-        fieldname=["id","Æ¬Ãû","ÉÏÓ³Äê·İ","ÆÀ·Ö","ÆÀ¼ÛÈËÊı","µ¼Ñİ","±à¾ç","Ö÷Ñİ","ÀàĞÍ","¹ú¼Ò/µØÇø","ÓïÑÔ","Ê±³¤","¼ò½é"]
+        # fieldname=["id","ä¹¦å","ä½œè€…","å‡ºç‰ˆç¤¾","è¯‘è€…","å‡ºç‰ˆå¹´","å†…å®¹ç®€ä»‹","ä½œè€…ç®€ä»‹","è±†ç“£è¯„åˆ†"]
+        fieldname=["id","ç‰‡å","ä¸Šæ˜ å¹´ä»½","è¯„åˆ†","è¯„ä»·äººæ•°","å¯¼æ¼”","ç¼–å‰§","ä¸»æ¼”","ç±»å‹","å›½å®¶/åœ°åŒº","è¯­è¨€","æ—¶é•¿","ç®€ä»‹"]
         with open(self.id_file,'r') as id_file:
             idnum=int(id_file.read())
         with open(self.dest_filename,'a',encoding="utf_8_sig",newline='') as destFile:
@@ -54,50 +54,50 @@ class Movie_Crawler(object):
                         print("\nYour request has been denied\n")
                         print('url:', self.url)
                         continue
-                # Æ¬Ãû
+                # ç‰‡å
                 name = soup.find(attrs={'property': 'v:itemreviewed'}).text.split(' ')[0]
-                # ÉÏÓ³Äê·İ
+                # ä¸Šæ˜ å¹´ä»½
                 year = soup.find(attrs={'class': 'year'}).text.replace('(','').replace(')','')
-                # ÆÀ·Ö
+                # è¯„åˆ†
                 score0 = soup.find(attrs={'property': 'v:average'})
                 if score0 is None:
-                    score = 'ÎŞ'
+                    score = 'æ— '
                 else :
                     score = score0.text
-                # ÆÀ¼ÛÈËÊı
+                # è¯„ä»·äººæ•°
                 votes0 = soup.find(attrs={'property': 'v:votes'})
                 if votes0 is None:
-                    votes = 'ÎŞ'
+                    votes = 'æ— '
                 else:
                     votes = votes0.text
                 infos = soup.find(attrs={'id': 'info'}).text.split('\n')[1:11]
-                # µ¼Ñİ
+                # å¯¼æ¼”
                 director = infos[0].split(': ')[1]
-                # ±à¾ç
+                # ç¼–å‰§
                 scriptwriter = infos[1].split(': ')[1]
-                # Ö÷Ñİ
+                # ä¸»æ¼”
                 actor = infos[2].split(': ')[1]
-                # ÀàĞÍ
+                # ç±»å‹
                 filmtype = infos[3].split(': ')[1]
-                # ¹ú¼Ò/µØÇø
+                # å›½å®¶/åœ°åŒº
                 area = infos[4].split(': ')[1]
                 if '.' in area:
                     area = infos[5].split(': ')[1].split(' / ')[0]
                 else:
                     area = infos[4].split(': ')[1].split(' / ')[0]
-                # ÓïÑÔ
+                # è¯­è¨€
                 language = infos[5].split(': ')[1].split(' / ')[0]
-                if '´óÂ½' in area or 'Ïã¸Û' in area or 'Ì¨Íå' in area:
-                    area = 'ÖĞ¹ú'
-                if 'ê©ÄÉ' in area:
-                    area = '·¨¹ú'
-                # Ê±³¤
+                if 'å¤§é™†' in area or 'é¦™æ¸¯' in area or 'å°æ¹¾' in area:
+                    area = 'ä¸­å›½'
+                if 'æˆ›çº³' in area:
+                    area = 'æ³•å›½'
+                # æ—¶é•¿
                 times0 = soup.find(attrs={'property': 'v:runtime'})
                 if times0 is None:
-                    times = 'ÎŞ'
+                    times = 'æ— '
                 else:
                     times = re.findall('\d+', times0.text)[0]
-                # ¼ò½é
+                # ç®€ä»‹
                 summary = soup.find(attrs={'property': 'v:summary'}).text
                 info_list.append(str(id_list[i]))
                 info_list.append(name)
@@ -112,7 +112,7 @@ class Movie_Crawler(object):
                 info_list.append(language)
                 info_list.append(times)
                 info_list.append(summary)
-                print ('ÕıÔÚÅÀÈ¡µÚ', i,'¸öµçÓ°')
+                print ('æ­£åœ¨çˆ¬å–ç¬¬', i,'ä¸ªç”µå½±')
                 print('url:', self.url)
                 print ('ID:',info_list[0])
                 print ('name:',info_list[1])
@@ -120,18 +120,18 @@ class Movie_Crawler(object):
                 destFile_csv.writerow(
                     {
                         "id":info_list[0],
-                        "Æ¬Ãû":info_list[1],
-                        "ÉÏÓ³Äê·İ":info_list[2],
-                        "ÆÀ·Ö":info_list[3],
-                        "ÆÀ¼ÛÈËÊı":info_list[4],
-                        "µ¼Ñİ":info_list[5],
-                        "±à¾ç":info_list[6],
-                        "Ö÷Ñİ":info_list[7],
-                        "ÀàĞÍ":info_list[8],
-                        "¹ú¼Ò/µØÇø":info_list[9],
-                        "ÓïÑÔ":info_list[10],
-                        "Ê±³¤":info_list[11],
-                        "¼ò½é":info_list[12]
+                        "ç‰‡å":info_list[1],
+                        "ä¸Šæ˜ å¹´ä»½":info_list[2],
+                        "è¯„åˆ†":info_list[3],
+                        "è¯„ä»·äººæ•°":info_list[4],
+                        "å¯¼æ¼”":info_list[5],
+                        "ç¼–å‰§":info_list[6],
+                        "ä¸»æ¼”":info_list[7],
+                        "ç±»å‹":info_list[8],
+                        "å›½å®¶/åœ°åŒº":info_list[9],
+                        "è¯­è¨€":info_list[10],
+                        "æ—¶é•¿":info_list[11],
+                        "ç®€ä»‹":info_list[12]
                     }
                 )
                 info_list.clear()
