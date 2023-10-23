@@ -4,6 +4,7 @@ def search_id(term):
     with open('pl.csv', newline='', encoding='utf-8-sig') as csvfile:
         pl = csv.DictReader(csvfile)
         doc = []
+        id_list = []
         for row in pl:
             if term == row['term']:
                 #print(row[' docID'])
@@ -15,7 +16,17 @@ def search_id(term):
                 id_list = [id.strip("'") for id in id_list]
                 break
     return id_list
-
+def Not(id_not):
+    ID_not = []
+    with open('Book.csv', newline='', encoding='utf-8-sig') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if row['id'] not in id_not:
+                ID_not.append(row['id'])
+    #print(ID_not)
+    # sort ID_not
+    ID_not.sort()
+    return ID_not
 def And(id_and):
     ID_and = []
     if(len(id_and) == 0):
@@ -86,7 +97,14 @@ if __name__ =="__main__":
         #print(term)
         for item in term:
             #print(item)
+            tag_not = 0
+            if item[0] == '!' or item[0] == '！':
+                tag_not = 1
+                item = item[1:]
             id = search_id(item)
+            if tag_not == 1:
+                id = Not(id)
+                #print("item:", item, "id:", id)
             id_and.append(id)
             #print(item, ":", id)
         #print(id_and)
@@ -95,12 +113,14 @@ if __name__ =="__main__":
         id_or.append(ID_and)
     # 合并andx项ID
     id_final = Or(id_or)
-    print(id_final)
+    # print(id_final)
     # 输出结果
     with open('Book.csv', newline='', encoding='utf-8-sig') as csvfile:
         reader = csv.DictReader(csvfile)
+        flag = 0
         for row in reader:
             if row['id'] in id_final:
+                flag = 1
     #            print(row['id'])
                 print(row['书名'])
                 #print(row['作者'])
@@ -110,3 +130,5 @@ if __name__ =="__main__":
     #            print(row['豆瓣评分'])
     #            print(row['内容简介'])
     #            print(row['作者简介'])
+        if flag == 0:
+            print("无结果")
