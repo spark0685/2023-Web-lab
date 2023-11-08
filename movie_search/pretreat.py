@@ -11,7 +11,7 @@ def pretreat():
         for row in reader:
             print(row['id'])
             print(row['片名'])
-            seg_list = jieba.cut_for_search(row['简介']+row['导演']+row['编剧']+row['主演']+row['类型']+row['国家/地区'])
+            seg_list = jieba.cut_for_search(row['简介']+row['导演']+row['编剧']+row['主演']+row['类型']+row['国家/地区']+row['片名'])
             seg_list = [word for word in seg_list if word not in stop_words]
             seg_list = [word for word in seg_list if word not in punctuation]
 
