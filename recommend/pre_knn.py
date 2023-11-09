@@ -1,7 +1,7 @@
 # -*- coding: gbk -*-
 import csv
 
-with open('./recommend/rate.csv', 'w', newline='', encoding='utf-8-sig') as f:
+with open('./recommend/rating.csv', 'w', newline='', encoding='utf-8-sig') as f:
     csv.DictWriter(f, fieldnames=['userId', 'movieId', 'rating', 'timestamp']).writeheader()
     user = []
     movie = []

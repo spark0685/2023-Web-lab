@@ -1,12 +1,61 @@
-# 豆瓣书籍爬虫
+# 2023-Web-lab1  
 
-## 爬取方法
+
+
+
+
+## 小组成员
+
+- [王润泽](https://github.com//spark0685)
+
+- [马彬](https://github.com//souracid)
+
+- [卢昶宇](https://github.com//Lucy8179)
+
+
+
+## 实验分工
+
+- 卢昶宇：豆瓣书籍爬取、索引压缩，knn算法
+- 王润泽：豆瓣电影爬取、建立跳表指针和查询，svd算法
+- 马彬：爬取数据分词、构建倒排表
+
+
+
+## 实验内容简介
+
+- #### 豆瓣数据爬取
+
+  - 爬取电影、书籍数据。电影数据包括基本信息、剧情简介、演职员表，书籍数据包括基本信息、内容简介、作者简介。
+  - 记录使用的爬虫工具。
+  - 记录平台反爬手段
+  - 使用不同的内容解析方法，提交获取数据。
+
+- #### 豆瓣数据检索
+
+  - 使用分词工具对豆瓣书籍、电影信息预处理
+  - 建立相关信息的倒排表
+  - 实现词项的bool查询，包括与、或、非操作
+  - 尝试实现跳表指针
+  - 实现倒排表的索引压缩
+
+- #### **豆瓣书籍/电影推荐**
+
+  - 使用K-近邻算法预测用户评分
+  - 使用svd算法预测用户评分
+  - 使用不同的指标对预测结果进行分析
+
+
+
+## 实验内容介绍
+
+### 豆瓣书籍爬虫
+
+#### 爬取方法
 
 本实验使用python语言，采用requests包将豆瓣网页html文本爬取下来，并用BeautifulSoup解析器和re正则表达式来解析爬取内容。
 
-## 爬取过程
-
-### 爬取豆瓣图书html文本
+#### 爬取豆瓣图书html文本
 
 先从csv文件读取书籍的id号，得到书籍的url地址，再用url地址获得网页html文本内容。爬取时需要加入headers和cookies信息来模仿普通人访问网页的行为，以避免被豆瓣网站禁止访问。
 
@@ -30,7 +79,7 @@ def load_id(self):
         return soup
 ```
 
-### 内容解析
+#### 内容解析
 
 得到爬取下列的html文本后，用BeautifulSoup解析书名和基本信息：
 
@@ -144,7 +193,7 @@ def get_book_name(self):
             return rating[0].string
 ```
 
-### 输出csv文件
+#### 输出csv文件
 
 本实验用csv库，用字典按列写入csv文件：
 
@@ -189,7 +238,7 @@ def get_book_name(self):
                 info_list.clear()
 ```
 
-### 爬取效果
+#### 爬取效果
 
 除了少数几个网页无法访问外，其他豆瓣书籍均能将信息完整爬取和解析出来。爬取示例：(由于该书籍简介有展开全部，所以一些内容有重复，考虑到后面倒排表构建不考虑词频，所以此处无影响)
 
@@ -197,13 +246,346 @@ def get_book_name(self):
 | ------- | ---------- | ------------- | -------------- | ------ | ------ | ------------------------------------------------------------ | ------------------------------------------------------------ | -------- |
 | 1046265 | 挪威的森林 | [日] 村上春树 | 上海译文出版社 | 林少华 | 2001-2 | 这是一部动人心弦的、平缓舒雅的、略带感伤的恋爱小说。小说主人公渡边以第一人称展开他同两个女孩间的爱情纠葛。渡边的第一个恋人直子原是他高中要好同学木月的女友，后来木月自杀了。一年后渡边同直子不期而遇并开始交往。此时的直子已变得娴静腼腆，美丽晶莹的眸子里不时掠过一丝难以捕捉的阴翳。两人只是日复一日地在落叶飘零的东京街头漫无目标地或前或后或并肩行走不止。直子20岁生日的晚上两人发生了性关系，不料第二天直子便不知去向。几个月后直子来信说她住进一家远在深山里的精神疗养院。渡边前去探望时发现直子开始带有成熟女性的丰腴与娇美。晚间两人虽同处一室，但渡边约束了自己，分手前表示永远等待直子。返校不久，由于一次偶然相遇，渡边开始与低年级的绿子交往。绿子同内向的直子截然相反，“简直就像迎着春天的晨光蹦跳到世界上来的一头小鹿”。这期间，渡边内心十分苦闷彷徨。一方面念念不忘直...(展开全部)这是一部动人心弦的、平缓舒雅的、略带感伤的恋爱小说。小说主人公渡边以第一人称展开他同两个女孩间的爱情纠葛。渡边的第一个恋人直子原是他高中要好同学木月的女友，后来木月自杀了。一年后渡边同直子不期而遇并开始交往。此时的直子已变得娴静腼腆，美丽晶莹的眸子里不时掠过一丝难以捕捉的阴翳。两人只是日复一日地在落叶飘零的东京街头漫无目标地或前或后或并肩行走不止。直子20岁生日的晚上两人发生了性关系，不料第二天直子便不知去向。几个月后直子来信说她住进一家远在深山里的精神疗养院。渡边前去探望时发现直子开始带有成熟女性的丰腴与娇美。晚间两人虽同处一室，但渡边约束了自己，分手前表示永远等待直子。返校不久，由于一次偶然相遇，渡边开始与低年级的绿子交往。绿子同内向的直子截然相反，“简直就像迎着春天的晨光蹦跳到世界上来的一头小鹿”。这期间，渡边内心十分苦闷彷徨。一方面念念不忘直子缠绵的病情与柔情，一方面又难以抗拒绿子大胆的表白和迷人的活力。不久传来直子自杀的噩耗，渡边失魂魄地四处徒步旅行。最后，在直子同房病友玲子的鼓励下，开始摸索此后的人生。 | 村上春树（1949-  ），日本小说家。曾在早稻田大学文学部戏剧科就读。1979年，他的第一部小说《听风之歌》问世后，即被搬上了银幕。随后，他的优秀作品《1973年的弹子球》、《寻羊冒险记》、《挪威的森林》等相继发表。他的创作不受传统拘束，构思新奇，行文潇洒自在，而又不流于庸俗浅薄。尤其是在刻画人的孤独无奈方面更有特色，他没有把这种情绪写成负的东西，而是通过内心的心智性操作使之升华为一种优雅的格调，一种乐在其中的境界，以此来为读者，尤其是生活在城市里的人们提供了一种生活模式或生命的体验。 | 8.1      |
 
-# 索引压缩
 
-### 压缩方法
+
+### 豆瓣电影爬取
+
+#### 爬取方法
+
+电影爬取方法与书籍爬取方法类似，使用python语言，采用requests包将豆瓣网页html文本爬取下来，并用BeautifulSoup解析器来解析爬取内容。
+
+#### 源码实现
+
+```python
+# coding=gb2312
+import csv
+import requests
+import re
+import random
+import time
+from bs4 import BeautifulSoup
+class Movie_Crawler(object):
+    status_code=200
+    def __init__(self,filename,dest_filename,id_file,url):
+        self.filename=filename
+        self.dest_filename=dest_filename
+        self.id_file=id_file
+        self.url=url
+    def load_id(self):
+        id_list=[]
+        with open(self.filename) as csvfile:
+            csv_reader=csv.reader(csvfile)
+            for row in csv_reader:
+                id_list.append(row[0])
+        return id_list
+    def get_soup(self):
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+        }
+        cookies={"cookie":"BDUSS_BFESS=XNYSnhUNmgyWkdwRDUxSVI1OUQzVkczTzBtUXhkblRSMXJjclNQa3RvWUs3djFpRVFBQUFBJCQAAAAAAAAAAAEAAAC2~RNzemhlbmfWo7rNyPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAph1mIKYdZiW; BAIDUID_BFESS=38FC810DA13A861B9EC13E501C0C5CFF:FG=1; ZFY=XRQ1CCqlHfVAHJ1xViu4XbXFvjMixhy47aPqVucrCKI:C; ab_sr=1.0.1_NDQ4ODc1OGRiODJhNTQ0MmEzYmM0MWVjY2I3ZjViYWZiOTM3NzBlMjA0Y2Q0MWNhYjcxOWE4MDg0NzE5OTRhOWEwZTI0NjZkZTY0NjhmYmIxNWU1ODIyNmZhMjI3ODMyMmI2Y2JkNWQ5MDAwZDRkZTIzZjk5NzE1OTI1Y2U2N2E3NDIwYjE5OTVhMDE4OWFkZDAzNWQxMmY4OTgyMGRlNWRmMTg0OWE0YzZhMDZkMjg1YmM4NmIzY2Q4MmQ5N2Y2"}
+        get_content=requests.get(self.url,headers=headers,cookies=cookies)
+        self.status_code=get_content.status_code
+        content=get_content.text
+        self.soup=BeautifulSoup(content,"html.parser")
+        return self.soup
+    def file_write_first(self):
+        # fieldname=["id","书名","作者","出版社","译者","出版年","内容简介","作者简介","豆瓣评分"]
+        fieldname=["id","片名","上映年份","评分","评价人数","导演","编剧","主演","类型","国家/地区","语言","时长","简介"]
+        with open(self.dest_filename,'w',encoding="utf_8_sig",newline='') as destFile:
+            destFile_csv=csv.DictWriter(destFile,fieldnames=fieldname)
+            destFile_csv.writeheader()
+    def file_write(self):
+        info_list=[]
+        id_list=self.load_id()
+        # fieldname=["id","书名","作者","出版社","译者","出版年","内容简介","作者简介","豆瓣评分"]
+        fieldname=["id","片名","上映年份","评分","评价人数","导演","编剧","主演","类型","国家/地区","语言","时长","简介"]
+        with open(self.id_file,'r') as id_file:
+            idnum=int(id_file.read())
+        with open(self.dest_filename,'a',encoding="utf_8_sig",newline='') as destFile:
+            destFile_csv=csv.DictWriter(destFile,fieldnames=fieldname)
+            for i in range(idnum,len(id_list)):
+                time.sleep(0.1)
+                self.url="https://movie.douban.com/subject/"+id_list[i]
+                soup = self.get_soup()
+                if(self.status_code!=200):
+                    with open(self.id_file,'w') as id_file:
+                        id_file.write(str(i))
+                        print("\nYour request has been denied\n")
+                        print('url:', self.url)
+                        continue
+                # 片名
+                name = soup.find(attrs={'property': 'v:itemreviewed'}).text.split(' ')[0]
+                # 上映年份
+                year = soup.find(attrs={'class': 'year'}).text.replace('(','').replace(')','')
+                # 评分
+                score0 = soup.find(attrs={'property': 'v:average'})
+                if score0 is None:
+                    score = '无'
+                else :
+                    score = score0.text
+                # 评价人数
+                votes0 = soup.find(attrs={'property': 'v:votes'})
+                if votes0 is None:
+                    votes = '无'
+                else:
+                    votes = votes0.text
+                infos = soup.find(attrs={'id': 'info'}).text.split('\n')[1:11]
+                # 导演
+                director = infos[0].split(': ')[1]
+                # 编剧
+                scriptwriter = infos[1].split(': ')[1]
+                # 主演
+                actor = infos[2].split(': ')[1]
+                # 类型
+                filmtype = infos[3].split(': ')[1]
+                # 国家/地区
+                area = infos[4].split(': ')[1]
+                if '.' in area:
+                    area = infos[5].split(': ')[1].split(' / ')[0]
+                else:
+                    area = infos[4].split(': ')[1].split(' / ')[0]
+                # 语言
+                language = infos[5].split(': ')[1].split(' / ')[0]
+                if '大陆' in area or '香港' in area or '台湾' in area:
+                    area = '中国'
+                if '戛纳' in area:
+                    area = '法国'
+                # 时长
+                times0 = soup.find(attrs={'property': 'v:runtime'})
+                if times0 is None:
+                    times = '无'
+                else:
+                    times = re.findall('\d+', times0.text)[0]
+                # 简介
+                summary = soup.find(attrs={'property': 'v:summary'}).text
+                info_list.append(str(id_list[i]))
+                info_list.append(name)
+                info_list.append(year)
+                info_list.append(score)
+                info_list.append(votes)
+                info_list.append(director)
+                info_list.append(scriptwriter)
+                info_list.append(actor)
+                info_list.append(filmtype)
+                info_list.append(area)
+                info_list.append(language)
+                info_list.append(times)
+                info_list.append(summary)
+                print ('正在爬取第', i,'个电影')
+                print('url:', self.url)
+                print ('ID:',info_list[0])
+                print ('name:',info_list[1])
+                print ()
+                destFile_csv.writerow(
+                    {
+                        "id":info_list[0],
+                        "片名":info_list[1],
+                        "上映年份":info_list[2],
+                        "评分":info_list[3],
+                        "评价人数":info_list[4],
+                        "导演":info_list[5],
+                        "编剧":info_list[6],
+                        "主演":info_list[7],
+                        "类型":info_list[8],
+                        "国家/地区":info_list[9],
+                        "语言":info_list[10],
+                        "时长":info_list[11],
+                        "简介":info_list[12]
+                    }
+                )
+                info_list.clear()
+if __name__ =="__main__":
+    filename="Movie_id.csv"
+    dest_filename="test.csv"
+    id_file="id.txt"
+    url="https://.douban.com"
+    movie=Movie_Crawler(filename=filename,dest_filename=dest_filename,id_file=id_file,url=url)
+    flag="y"
+    # print("Do you want to rewrite the csv file?\tprint[y/n]")
+    # flag=input()
+    # if(flag == 'y'):
+    #     movie.file_write_first()
+    movie.file_write()
+       
+```
+
+#### 爬取效果
+
+实现了1200部指定电影的爬取，部分下架电影和特殊题材（情色/政治敏感）电影未能成功爬取。
+
+![4](fig/4.png)
+
+### 倒排表建立
+
+#### 分词
+
+
+
+#### 倒排表
+
+
+
+
+
+
+
+
+
+### 豆瓣电影检索
+
+#### 检索主体框架
+
+输入检索词项表达式后，使用split函数解析表达式，并调用And、Or、Not子模块，计算得出表达式对应书籍/电影ID列表，并依次打印符合要求的书籍/电影信息。
+
+```python
+if __name__ =="__main__":
+    input = input("请输入搜索内容：")
+    term_and = input.split('|')
+    # 得出and项的ID
+    id_or = []
+    for item_and in term_and:
+        id_and = []
+        term = item_and.split('&')
+        #print(term)
+        for item in term:
+            #print(item)
+            tag_not = 0
+            if item[0] == '!' or item[0] == '！':
+                tag_not = 1
+                item = item[1:]
+            id = search_id(item)
+            if tag_not == 1:
+                id = Not(id)
+                #print("item:", item, "id:", id)
+            id_and.append(id)
+            #print(item, ":", id)
+        #print(id_and)
+        ID_and = And(id_and)
+        #print(ID_and)
+        id_or.append(ID_and)
+    # 合并andx项ID
+    id_final = Or(id_or)
+    # print(id_final)
+    # 输出结果
+    with open('Book.csv', newline='', encoding='utf-8-sig') as csvfile:
+        reader = csv.DictReader(csvfile)
+        flag = 0
+        for row in reader:
+            if row['id'] in id_final:
+                flag = 1
+    #            print(row['id'])
+                print(row['书名'])
+                #print(row['作者'])
+    #            print(row['出版社'])
+    #            print(row['译者'])
+    #            print(row['出版年'])
+    #            print(row['豆瓣评分'])
+    #            print(row['内容简介'])
+    #            print(row['作者简介'])
+        if flag == 0:
+            print("无结果")
+```
+
+#### 布尔检索实现
+
+Not采用遍历所有ID的方法，取非运算；
+
+And和Or均采用O(m+n)时间复杂度，O(1)空间复杂度的算法实现。
+
+```python
+def Not(id_not):
+    ID_not = []
+    with open('Book.csv', newline='', encoding='utf-8-sig') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if row['id'] not in id_not:
+                ID_not.append(row['id'])
+    #print(ID_not)
+    # sort ID_not
+    ID_not.sort()
+    return ID_not
+def And(id_and):
+    ID_and = []
+    if(len(id_and) == 0):
+        return ID_and
+    for i in range(len(id_and)):
+        if i == 0:
+            ID_and = id_and[i]
+            #print("ID_and:", ID_and)
+        else:
+            if(len(id_and[i]) == 0):
+                ID_and = []
+                break
+            m = 0
+            n = 0
+            while(m < len(ID_and) and n < len(id_and[i])):
+                # print("m:", m, "n:", n)
+                # print("ID_and[m]:", ID_and[m], "id_and[i][n]:", id_and[i][n])
+                if ID_and[m] == id_and[i][n]:
+                    m += 1
+                    n += 1
+                elif ID_and[m] < id_and[i][n]:
+                    ID_and.pop(m)
+                else:
+                    n += 1
+                # print("ID_and:", ID_and)
+            if m < len(ID_and):
+                for j in range(m, len(ID_and)):
+                    ID_and.pop(m)
+                # print("ID_and:", ID_and)
+    return ID_and
+
+def Or(id_or):
+    ID_or = []
+    if(len(id_or) == 0):
+        return ID_or
+    for i in range(len(id_or)):
+        if i == 0:
+            ID_or = id_or[i]
+            #print("ID_or:", ID_or)
+        else:
+            if(len(id_or[i]) == 0):
+                continue
+            m = 0
+            n = 0
+            while(m < len(ID_or) and n < len(id_or[i])):
+                if ID_or[m] == id_or[i][n]:
+                    m += 1
+                    n += 1
+                elif ID_or[m] < id_or[i][n]:
+                    m += 1
+                else:
+                    ID_or.insert(m, id_or[i][n])
+                    m += 1
+                    n += 1
+            if n < len(id_or[i]):
+                for j in range(n, len(id_or[i])):
+                    ID_or.append(id_or[i][j])
+    #print("ID_or:", ID_or)
+    return ID_or
+```
+
+#### 检索效果
+
+布尔检索支持与或表达式的输入格式。支持与、或、非检索。
+
+下图以电影检索为例，为了展示方便，仅仅输出电影名称。
+
+- 输入“日本”：![5](fig/5.png)
+- 输入“日本&柯南”![6](fig/6.png)
+- 输入“日本&柯南&魔术”![7](fig/7.png)
+- 输入“日本&柯南&!魔术”![8](fig/8.png)
+- 输入“日本&柯南|魔术”![9](fig/9.png)
+
+
+
+### 索引压缩
+
+#### 压缩方法
 
 本实验采用前端编码的方式来压缩索引(文档id)，先将文档ID转化为文档之间的间隔，即相邻两个文档ID之差，再使用前端编码的方式进行压缩。
 
-### 压缩过程
+#### 压缩过程
 
 先得到文档间距的中间文件：
 
@@ -313,15 +695,15 @@ def unzip(srcfile,destfile):
 				write_list.clear()
 ```
 
-### 压缩效果
+#### 压缩效果
 
 以豆瓣图书倒排表为例,压缩前：
 
-![](..\fig\屏幕截图 2023-11-04 112621.png)
+![1](fig/1.png)
 
 生成的文档间距文件interval.csv和压缩文件plzip.csv：
 
-![](..\fig\屏幕截图 2023-11-04 112837.png)
+![2](fig/2.png)
 
 可以得到压缩率为:
 $$
@@ -329,22 +711,135 @@ $$
 $$
 比较解压后的文件plunzip.csv和原文件pl.csv，可得两者文件完全相同：
 
-![](..\fig\屏幕截图 2023-11-04 113308.png)
+![3](fig/3.png)
 
-# 豆瓣推荐
 
-## K-近邻算法预测评分
 
-### 算法原理
+### Funk-SVD算法预测评分
 
-- 1, 计算训练样本和测试样本中每个样本点的距离（常见的距离度量有欧式距离，马氏距离等）；
--  2, 对上面所有的距离值进行排序；
--  3, 选前k个最小距离的样本；
--  4, 根据这k个样本的标签进行投票，得到最后的分类类别；
+#### 算法原理
 
-## 预测过程
+- 计算训练样本和测试样本中每个样本点的距离（常见的距离度量有欧式距离，马氏距离等）；
+-  对上面所有的距离值进行排序；
+-  选前k个最小距离的样本；
+-  根据这k个样本的标签进行投票，得到最后的分类类别；
 
-### 预处理数据
+#### 预处理数据
+
+由于Funk-SVD算法需要将用户评分数据转换为评分矩阵，而原始数据中用户信息仅有ID信息，没有序号信息，所以必须建立用户ID到序号的一一映射。
+
+同理，必须建立项目ID到序号的一一映射。
+
+以电影数据为例，进行预处理时，扫描movie_score.csv，将用户id转换为序号存入user.csv中，将电影id转换为序号存入movie.csv中。
+
+```python
+# -*- coding: gbk -*-
+import csv
+
+with open('./recommend/rating.csv', 'w', newline='', encoding='utf-8-sig') as f:
+    csv.DictWriter(f, fieldnames=['userId', 'movieId', 'rating', 'timestamp']).writeheader()
+    user = []
+    movie = []
+    with open('./recommend/movie_score.csv', newline='', encoding='utf-8-sig') as csvfile:
+        pl = csv.DictReader(csvfile)
+        for row in pl:
+            # print(row['User'], row['Rate'])
+            # 将用户id转换为1-943存入新的列表中
+            if row['User'] not in user:
+                user.append(row['User'])
+            # 将电影id转换为1-1682存入新的列表中
+            if row['Movie'] not in movie:
+                movie.append(row['Movie'])
+            csv.DictWriter(f, fieldnames=['userId', 'movieId', 'rating', 'timestamp']).writerow({'userId': user.index(row['User'])+1, 'movieId': movie.index(row['Movie'])+1, 'rating':row['Rate'], 'timestamp':row['Time']})
+        # print(user)
+        # print(movie)
+    #保存用户id和电影id
+    with open('./recommend/user.csv', 'w', newline='', encoding='utf-8-sig') as f:
+        csv.DictWriter(f, fieldnames=['userId']).writeheader()
+        for i in range(len(user)):
+            csv.DictWriter(f, fieldnames=['userId']).writerow({'userId': user[i]})
+    with open('./recommend/movie.csv', 'w', newline='', encoding='utf-8-sig') as f:
+        csv.DictWriter(f, fieldnames=['movieId']).writeheader()
+        for i in range(len(movie)):
+            csv.DictWriter(f, fieldnames=['movieId']).writerow({'movieId': movie[i]})
+
+
+```
+
+最终效果如下：
+
+- 用户ID![10](fig/10.png)
+- 电影ID![11](fig/11.png)
+
+#### 数据集划分
+
+使用random库函数打乱评分数据，随后划分数据为两部分，一半训练，一半测试。
+
+```python
+# 数据读取
+reader = Reader(line_format='user item rating timestamp', sep=',', skip_lines=1)
+data = Dataset.load_from_file('./recommend/rating.csv', reader=reader)
+
+# 随机打乱数据
+raw_ratings = data.raw_ratings
+random.shuffle(raw_ratings)
+
+# 将数据分成两部分（一半训练，一半测试）
+threshold = int(0.5 * len(raw_ratings))
+train_raw_ratings = raw_ratings[:threshold]
+test_raw_ratings = raw_ratings[threshold:]
+# 修改测试数据格式以仅包含用户ID、物品ID和实际评分
+modified_test_raw_ratings = [(uid, iid, r_ui) for (uid, iid, r_ui, timestamp) in test_raw_ratings]
+```
+
+#### 训练和预测
+
+使用surprise的**SVD**模型进行训练和预测，并使用accuracy.rmse进行简单评估。
+
+```python
+# 构建训练集和测试集
+data.raw_ratings = train_raw_ratings  # 仅使用一半的数据作为训练集
+trainset = data.build_full_trainset()
+# train_set = data.build_full_trainset()
+
+# 使用funkSVD
+algo = SVD(biased=False)#这里默认是True，使用的是biasSVD
+
+# 存储测试集的预测结果
+all_predictions = []
+
+# 训练并预测
+algo.fit(trainset)
+predictions = algo.test(modified_test_raw_ratings)
+all_predictions.append(predictions)
+
+# 输出测试结果
+with open('./recommend/svd_test.csv', 'w', newline='', encoding='utf-8-sig') as f:
+    csv.DictWriter(f, fieldnames=['user', 'Movie', 'Rate']).writeheader()
+    for uid, iid, r_ui, est, _ in predictions:
+        csv.DictWriter(f, fieldnames=['user', 'Movie', 'Rate']).writerow({'user': uid, 'Movie': iid, 'Rate': est})
+
+# 计算RMSE
+rmse = accuracy.rmse(predictions, verbose=True)
+print(f"RMSE on the other half of the data: {rmse}")
+```
+
+#### 运行结果
+
+生成svd_predict.csv文件，包含对于测试集的预测结果。
+
+![12](fig/12.png)
+
+### K-近邻算法预测评分
+
+#### 算法原理
+
+- 计算训练样本和测试样本中每个样本点的距离（常见的距离度量有欧式距离，马氏距离等）；
+- 对上面所有的距离值进行排序；
+- 选前k个最小距离的样本；
+- 根据这k个样本的标签进行投票，得到最后的分类类别；
+
+#### 预处理数据
 
 由于K-近邻算法基于计算样本点之间的距离，所以样本数据必须为数字，不能包含字符串等其他格式。
 
@@ -429,7 +924,7 @@ loaded_data.to_csv("pretreat.csv")
 
 ```
 
-### 数据集划分
+#### 数据集划分
 
 使用train_test_split()函数，将源文件随机打乱，训练集和测试集大小均为50%。
 
@@ -442,7 +937,7 @@ test_data.sort_values(by=["User","Rate"],ascending=[True,False],inplace=True)
 test_data.to_csv("test.csv",index=False)
 ```
 
-### 训练和预测
+#### 训练和预测
 
 使用sklearn的**KNeighborsClassifier**模型进行训练和预测，并使用accuracy_score()进行简单评估。
 
