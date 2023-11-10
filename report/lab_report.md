@@ -1134,11 +1134,11 @@ mse = compute_mse(predictions, targets)
 print('MSE:', sum(mse) / len(mse)) 
 
 ```
-以上代码是使用原始的NDCG计算公式计算NDCG，并且顺便计算了MSE，最终会输出NDCG和MSE的平均值。
-计算结果如下图所示：
-knn算法：
-![13](fig/13.png)
-SVD算法：
-![Alt text](fig/15.png)
-可以看到，SVD算法的NDCG比KNN算法的要好，说明SVD算法的预测效果比KNN算法的要好。
+以上代码是使用原始的NDCG计算公式计算NDCG，并且顺便计算了MSE，最终会输出NDCG和MSE的平均值。   
+计算结果如下图所示：  
+knn算法：  
+![13](fig/13.png)  
+SVD算法：  
+![Alt text](fig/15.png)  
+可以看到，SVD算法的NDCG比KNN算法的要好，说明SVD算法的预测效果比KNN算法的要好。  
 
