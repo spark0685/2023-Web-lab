@@ -1150,7 +1150,7 @@ knn算法：
 (书籍)  
 SVD算法：  
 ![Alt text](fig/16.png)  
-(电影)
+(电影)  
 ![Alt text](fig/17.png)  
-(书籍)
+(书籍)  
 可以看到，KNN算法平均来说略好于SVD算法
