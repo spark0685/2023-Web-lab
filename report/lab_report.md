@@ -18,7 +18,7 @@
 
 - 卢昶宇：豆瓣书籍爬取、索引压缩，knn算法
 - 王润泽：豆瓣电影爬取、建立跳表指针和查询，svd算法
-- 马彬：爬取数据分词、构建倒排表
+- 马彬：爬取数据分词、构建倒排表、预测结果评估
 
 
 
@@ -415,21 +415,108 @@ if __name__ =="__main__":
 
 ![4](fig/4.png)
 
-### 倒排表建立
 
-#### 分词
+### 数据预处理
+#### 分词工具的选择
+为了选用一个较好的分词工具，我们对jieba、THULAC两种分词工具进行了对比实验。
+运行以下程序，可以得到jieba和THULAC的分词结果，并以csv文件的形式保存到`cmp.csv`文件中。
+```python
+import csv
+import jieba
+import thulac
+
+punctuation = '，。！？、（）【】<>《》=：+-*—“”…\n\t\r[] \u3000,/·()'#标点符号
+thulac1 = thulac.thulac(seg_only=True)
+def cmp():
+    with open('baidu_stopwords.txt', 'r', encoding='utf-8') as f:
+        stop_words = f.read().split('\n')#停用词表
+    with open('movie.csv', newline='', encoding='utf-8-sig') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            for i in punctuation:
+                row['简介'] = row['简介'].replace(i, '')#去除标点符号
+            list_jieba = jieba.cut(row['简介'])
+
+            list_thulac = thulac1.cut(row['简介'])
+            list_thulac = [i[0] for i in list_thulac]
+            with open('cmp.csv', 'a', newline='', encoding='utf-8-sig') as f:
+                csv.DictWriter(f, fieldnames=['id','jieba','thulac']).writerow({'id': row['id'], 'jieba':'/'.join(list_jieba), 'thulac':'/'.join(list_thulac)})
+            print(row['id'], list_jieba, list_thulac)
+
+with open('cmp.csv', 'w', newline='', encoding='utf-8-sig') as f:
+    csv.DictWriter(f, fieldnames=['id','jieba','thulac']).writeheader()
+cmp()
+```
+节选一部分对比结果如下：
+| id | jieba | thulac |
+| :----: | :---: | :---:|
+|1292052|一场/谋杀案/使/银行家/安迪/蒂姆/•/罗宾斯/TimRobbins/饰/蒙冤/入狱/谋杀/妻子/及其/情人/的/指控/将/囚禁/他/终生/在/肖申克/监狱/的/首次/现身/就让/监狱/大哥/瑞德/摩根/•/弗里/曼/MorganFreeman/饰/对/他/另眼相看/瑞德/帮助/他/搞/到/一把/石锤/和/一幅/女明星/海报/两人/渐成/患难之交/很快/安迪/在/监狱/里/大显/其才/担当/监狱/图书/管理员/并/利用/自己/的/金融/知识/帮助/监狱/官/避税/引起/了/典狱长/的/注意/被/招致/麾下/帮助/典狱长/洗/黑钱/偶然/一次/他/得知/一名/新/入狱/的/小偷/能够/作证/帮/他/洗脱/谋杀罪/燃起/一丝/希望/的/安迪/找到/了/典狱长/希望/他/能/帮/自己/翻案/阴险/伪善/的/狱长/假装/答应/安迪/背后/却/派/人/杀死/小偷/让/他/唯一/能/合法/出狱/的/希望/泯灭/沮丧/的/安迪/并/没有/绝望/在/一个/电闪雷鸣/的/风雨/夜/一场/暗藏/几十年/的/越狱/计划/让/他/自我/救赎/重获/自由/老朋友/瑞德/在/他/的/鼓舞/和/帮助/下/也/勇敢/地奔/向/自由/本片/获得/1995/年/奥/...	|一/场/谋杀案/使/银行/家/安迪蒂姆/•/罗/宾斯TimRobbins/饰蒙/冤入狱/谋杀/妻子/及其/情人/的/指控/将/囚禁/他/终生/在/肖申克/监狱/的/首/次/现身/就/让/监狱/大哥/瑞德/摩根•/弗里曼MorganFreeman饰/对/他/另眼相看/瑞德/帮助/他/搞/到/一/把/石锤/和/一/幅/女/明星/海报/两/人/渐/成/患难之交/很快/安迪/在/监狱/里/大显其才/担当/监狱/图书/管理员/并/利用/自己/的/金融/知识/帮助/监狱/官避税/引起/了/典狱/长/的/注意/被/招致/麾下/帮助/典狱/长洗/黑钱/偶然/一/次/他/得知/一/名/新/入狱/的/小偷/能够/作证/帮/他/洗/脱谋/杀罪/燃起/一/丝/希望/的/安迪/找到/了/典狱/长/希望/他/能/帮/自己/翻案/阴险/伪善/的/狱长/假装/答应/安迪/背后/却/派/人/杀死/小偷/让/他/唯一/能/合法/出狱/的/希望/泯灭/沮丧/的/安迪/并/没有/绝望/在/一个/电闪雷鸣/的/风雨夜/一/场/暗藏/几十/年/的/越狱/计划/让/他/自我/救赎/重/获/自由/老朋友/瑞德/在/他/的/鼓舞/和/帮助/下/也/勇敢/地/奔/向/自由/本片/获得/1995年/奥/...
+
+可以看到，THULAC分词结果有些不尽人意，比如 一场 被分词成了 一/场，银行家 被分词成了 银行/家，这些分词结果不符合人的直觉，
+而结巴分词结果则比较符合人的直觉。因此我们最终选择了jieba作为分词工具。
+
+#### 分词结果的处理
+jieba分词结果中，有些词语是无意义的，比如“的”、“了”、“是”等，这些词语被称为停用词。我们使用了百度停用词表，将停用词从分词结果中去除，并将分词结果保存到csv文件中。
+除此之外，我们还将分词结果中的标点符号去除，并将分词结果中的空格去除。
+最后把预处理结果保存到`movie_pretreat.csv`文件中。
+```python
+import jieba
+import csv
 
 
+punctuation = '，。！？、（）【】<>《》=：+-*—“”…\n\t\r[] \u3000,/·()' #标点符号
+def pretreat():
+    with open('baidu_stopwords.txt', 'r', encoding='utf-8') as f:
+        stop_words = f.read().split('\n')#停用词表
+    with open('movie.csv', newline='', encoding='utf-8-sig') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            print(row['id'])
+            print(row['片名'])
+            seg_list = jieba.cut_for_search(row['简介']+row['导演']+row['编剧']+row['主演']+row['类型']+row['国家/地区'])
+            seg_list = [word for word in seg_list if word not in stop_words]
+            seg_list = [word for word in seg_list if word not in punctuation]
 
-#### 倒排表
+            seg_list += row['片名'].split(' ')
+            seg_list += row['主演'].replace('\r',' ').replace('\n','').replace('[','').replace(']','').replace("'",'').replace(' ','').split('/')
+            seg_list += row['类型'].replace(' ','').split('/')
+#            seg_list += row['评分'].split(' ')
+            seg_list = [word for word in seg_list if word not in punctuation]           
+            print(",".join(seg_list))
+            with open('movie_pretreat.csv', 'a', newline='', encoding='utf-8-sig') as f:
+               csv.DictWriter(f, fieldnames=['id', 'word']).writerow({'id': row['id'], 'word':','.join(seg_list)})
+            print(row['id'])
+            
+with open('movie_pretreat.csv', 'w', newline='', encoding='utf-8-sig') as f:
+    csv.DictWriter(f, fieldnames=['id', 'word']).writeheader()
+pretreat()
+```
+### 建立倒排索引
+利用上面的预处理结果，建立倒排索引，将倒排索引保存到`pl.csv`文件中。
+```python
+import csv
 
 
-
-
-
-
-
-
+word_map = {}  #字典，key为词语，value为包含该词语的电影id列表
+with open('movie_pretreat.csv', newline='', encoding='utf-8-sig') as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        for word in row['word'].split(','):
+            if word not in word_map:
+                word_map[word] = [row['id']]
+            else:
+                if row['id'] not in word_map[word]:
+                    word_map[word].append(row['id'])  
+for word in word_map:
+    #对于每个词语，将包含该词语的电影id列表按照从小到大排序
+    word_map[word].sort()
+with open('movie_pl.csv', 'w', newline='', encoding='utf-8-sig') as f:
+    #将倒排索引保存到pl.csv文件中
+    csv.DictWriter(f, fieldnames=['term', ' docID']).writeheader()
+    for word in word_map:
+        csv.DictWriter(f, fieldnames=['term', 'docID']).writerow({'term': word, 'docID': word_map[word]})
+        print(word, word_map[word])
+```
 
 ### 豆瓣电影检索
 
@@ -965,3 +1052,93 @@ print(accuracy_score(y_test,y_predict)) #简单评估预测准确率
 - 评分
 
 这些信息。
+### 预测结果评估
+#### NDCG的计算
+```python
+import pandas as pd
+import math
+
+def compute_DCG(rel_list):
+    dcg = 0.0
+    for i in range(len(rel_list)):
+        dcg += (2 ** rel_list[i] - 1) / math.log2(i + 2)
+    return dcg
+
+def compute_NDCG(predictions, targets):
+    ndcg = []
+    for i in range(len(predictions)):
+        pred = predictions[i]
+        target = targets[i]
+
+        # 根据评分对预测结果进行排序
+        sorted_pred = [x for _, x in sorted(zip(target, pred), reverse=True)]
+        # 计算预测结果的DCG
+        dcg_pred = compute_DCG(sorted_pred)
+        # 计算真实结果的DCG
+        dcg_target = compute_DCG(target)
+
+        # 如果DCG_target为0，则NDCG为0
+        if dcg_target == 0:
+            ndcg.append(0)
+        else:
+            # 计算NDCG
+            ndcg.append(dcg_pred / dcg_target)
+    return ndcg
+
+def compute_mse(predictions, targets):
+    mse = []
+    for i in range(len(predictions)):
+        pred = predictions[i]
+        target = targets[i]
+
+        # 计算预测结果和真实结果的均方误差
+        mse.append(sum([(pred[i] - target[i]) ** 2 for i in range(len(pred))]) / len(pred))
+    return mse
+
+# 读取预测文件和测试文件的CSV文件
+predictions_df = pd.read_csv('predict.csv')
+targets_df = pd.read_csv('test.csv')
+
+# 获取用户和评分列的数据
+users_pred = predictions_df['User'].tolist()
+ratings_pred = predictions_df['Rate'].tolist()
+users_target = targets_df['User'].tolist()
+ratings_target = targets_df['Rate'].tolist()
+
+# 将用户和评分列的数据按照用户进行分组
+users_pred_grouped = predictions_df.groupby('User')
+users_target_grouped = targets_df.groupby('User')
+
+# 用于存储每个用户的预测评分和真实评分
+predictions = []
+targets = []
+
+# 遍历每个用户
+for user in users_pred_grouped.groups.keys():
+    # 获取该用户的预测评分
+    user_pred_ratings = users_pred_grouped.get_group(user)['Rate'].tolist()
+    # 获取该用户的真实评分
+    user_target_ratings = users_target_grouped.get_group(user)['Rate'].tolist()
+
+    # 将该用户的预测评分和真实评分添加到列表中
+    predictions.append(user_pred_ratings)
+    targets.append(user_target_ratings)
+
+# 计算NDCG
+ndcg = compute_NDCG(predictions, targets)
+
+print('NDCG:', sum(ndcg) / len(ndcg)) 
+
+# 计算MSE
+mse = compute_mse(predictions, targets)
+print('MSE:', sum(mse) / len(mse)) 
+
+```
+以上代码是使用原始的NDCG计算公式计算NDCG，并且顺便计算了MSE，最终会输出NDCG和MSE的平均值。
+计算结果如下图所示：
+knn算法：
+![13](fig/13.png)
+SVD算法：
+![Alt text](fig/15.png)
+可以看到，SVD算法的NDCG比KNN算法的要好，说明SVD算法的预测效果比KNN算法的要好。
+
