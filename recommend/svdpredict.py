@@ -55,9 +55,10 @@ all_predictions.append(predictions)
 
 # 输出测试结果
 with open('./recommend/svd_test.csv', 'w', newline='', encoding='utf-8-sig') as f:
-    csv.DictWriter(f, fieldnames=['user', 'Movie', 'Rate']).writeheader()
+    csv.DictWriter(f, fieldnames=['user', 'Movie', 'Rate', 'original_rate']).writeheader()
     for uid, iid, r_ui, est, _ in predictions:
-        csv.DictWriter(f, fieldnames=['user', 'Movie', 'Rate']).writerow({'user': uid, 'Movie': iid, 'Rate': est})
+        csv.DictWriter(f, fieldnames=['user', 'Movie', 'Rate', 'original_rate']).writerow({'user': uid, 'Movie': iid, 'Rate': est, 'original_rate': r_ui})
+        #csv.DictWriter(f, fieldnames=['user', 'Movie', 'Rate']).writerow({'user': uid, 'Movie': iid, 'Rate': est})
 
 # 计算RMSE
 rmse = accuracy.rmse(predictions, verbose=True)
@@ -92,13 +93,17 @@ with open ('./recommend/movie.csv', newline='', encoding='utf-8-sig') as csvfile
 
 # 保存predictions到文件中（保存真实值和预测值）
 with open('./recommend/svd_predict.csv', 'w', newline='', encoding='utf-8-sig') as f:
-    csv_writer = csv.DictWriter(f, fieldnames=['user', 'Movie', 'Rate'])
-    csv_writer.writeheader()  # 写入标题行
+    # csv_writer = csv.DictWriter(f, fieldnames=['user', 'Movie', 'Rate'])
+    # csv_writer.writeheader()  # 写入标题行
+    # for uid, iid, r_ui, est, _ in predictions:
+    #     user_id = user[int(uid)-1]
+    #     movie_id = movie[int(iid)-1]
+    #     csv_writer.writerow({'user': user_id, 'Movie': movie_id, 'Rate': est})
+    csv.DictWriter(f, fieldnames=['user', 'Movie', 'Rate', 'original_rate']).writeheader()
     for uid, iid, r_ui, est, _ in predictions:
         user_id = user[int(uid)-1]
         movie_id = movie[int(iid)-1]
-        csv_writer.writerow({'user': user_id, 'Movie': movie_id, 'Rate': est})
-
+        csv.DictWriter(f, fieldnames=['user', 'Movie', 'Rate', 'original_rate']).writerow({'user': user_id, 'Movie': movie_id, 'Rate': est, 'original_rate': r_ui})
 
 
 # # 输出所有用户的预测结果
