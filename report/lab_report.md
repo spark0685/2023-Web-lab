@@ -1145,7 +1145,12 @@ print('MSE:', sum(mse) / len(mse))
 计算结果如下图所示：  
 knn算法：  
 ![13](fig/13.png)  
+(电影)   
+![14](fig/14.png)  
+(书籍)  
 SVD算法：  
-![Alt text](fig/15.png)  
-可以看到，SVD算法的NDCG比KNN算法的要好，说明SVD算法的预测效果比KNN算法的要好。  
-
+![Alt text](fig/16.png)  
+(电影)
+![Alt text](fig/17.png)  
+(书籍)
+可以看到，KNN算法平均来说略好于SVD算法
