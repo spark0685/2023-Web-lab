@@ -78,7 +78,6 @@ for relation in Graph["relation"]:
 Graph.drop(index=delete_line,axis=0,inplace=True)
 Graph.reset_index(drop=True, inplace=True)
 
-Graph.to_csv("firstjump.csv")
 cons_str=r"<http://rdf.freebase.com/ns/"
 
 Graph=pd.read_csv(filepath_or_buffer="firstjump.csv",usecols=["head_entity","relation","tail_entity"])
