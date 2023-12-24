@@ -9,7 +9,7 @@ def parse_args():
 
     parser.add_argument('--data_name', nargs='?', default='Douban',
                         help='Choose a dataset')
-    parser.add_argument('--data_dir', nargs='?', default='data/',
+    parser.add_argument('--data_dir', nargs='?', default='lab2\\stage2\\data\\',
                         help='Input data path.')
     
     parser.add_argument("--cuda", action='store_true',
@@ -19,7 +19,7 @@ def parse_args():
 
     parser.add_argument('--use_pretrain', type=int, default=0,
                         help='0: No pretrain, 1: Pretrain with stored model.')
-    parser.add_argument('--pretrain_model_path', nargs='?', default='trained_model/KG_free.pth',
+    parser.add_argument('--pretrain_model_path', nargs='?', default='lab2/stage2/trained_model/KG_free/dimDouban_lr32_l20.001/model0_epoch10.pth',
                         help='Path of stored model.')
 
     parser.add_argument('--embed_dim', type=int, default=32,
@@ -34,7 +34,7 @@ def parse_args():
 
     parser.add_argument('--lr', type=float, default=1e-3,
                         help='Learning rate.')
-    parser.add_argument('--n_epoch', type=int, default=1000,
+    parser.add_argument('--n_epoch', type=int, default=100,
                         help='Number of epoch.')
     parser.add_argument('--stopping_steps', type=int, default=10,
                         help='Number of epoch for early stopping')
@@ -49,7 +49,7 @@ def parse_args():
 
     args = parser.parse_args()
 
-    save_dir = 'trained_model/{}/KG_free/dim{}_lr{}_l2{}/'.format(
+    save_dir = 'lab2//stage2//trained_model//KG_free/dim{}_lr{}_l2{}/'.format(
         args.data_name, args.embed_dim, args.lr, args.l2loss_lambda)
     args.save_dir = save_dir
 

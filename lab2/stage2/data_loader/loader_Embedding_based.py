@@ -29,21 +29,25 @@ class DataLoader(DataLoaderBase):
         '''
         # 1. 为KG添加逆向三元组，即对于KG中任意三元组(h, r, t)，添加逆向三元组 (t, r+n_relations, h)，
         #    并将原三元组和逆向三元组拼接为新的DataFrame，保存在 self.kg_data 中。
-        
-        self.kg_data = 
+        relations = len(kg_data['r'].unique())
+        inverse_kg_data = kg_data.copy()
+        inverse_kg_data['r'] += relations
+        inverse_kg_data = inverse_kg_data[['t', 'r', 'h']]
+        self.kg_data = pd.concat([kg_data, inverse_kg_data], ignore_index=True)
 
         # 2. 计算关系数，实体数和三元组的数量
-        self.n_relations = 
-        self.n_entities = 
-        self.n_kg_data = 
+        self.n_relations = len(self.kg_data['r'].unique())
+        self.n_entities = len(set(kg_data['h']).union(set(kg_data['t'])))
+        self.n_kg_data = len(self.kg_data)
 
         # 3. 根据 self.kg_data 构建字典 self.kg_dict ，其中key为h, value为tuple(t, r)，
         #    和字典 self.relation_dict，其中key为r, value为tuple(h, t)。
         self.kg_dict = collections.defaultdict(list)
         self.relation_dict = collections.defaultdict(list)
+        for h, r, t in self.kg_data.values:
+            self.kg_dict[h].append((t, r))
+            self.relation_dict[r].append((h, t))
         
-
-
 
     def print_info(self, logging):
         logging.info('n_users:      %d' % self.n_users)

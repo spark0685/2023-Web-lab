@@ -190,4 +190,5 @@ def predict(args):
 if __name__ == '__main__':
     args = parse_args()
     train(args)
-    # predict(args)
+    predict(args)
+    # C:\Users\promise\Desktop\workspace\2023-Web-lab\lab2\stage2\trained_model\KG_free\dimDouban_lr32_l20.001\model0_epoch10.pth

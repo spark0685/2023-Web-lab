@@ -19,7 +19,7 @@ def parse_args():
 
     parser.add_argument('--use_pretrain', type=int, default=0,
                         help='0: No pretrain, 1: Pretrain with stored model.')
-    parser.add_argument('--pretrain_model_path', nargs='?', default='trained_model/Embedding_based.pth',
+    parser.add_argument('--pretrain_model_path', nargs='?', default='trained_model/Douban/Embedding_based/dim32_lr0.001_l20.0001_TransE/model1_epoch10.pth',
                         help='Path of stored model.')
 
     parser.add_argument('--cf_batch_size', type=int, default=1024,
@@ -44,7 +44,7 @@ def parse_args():
 
     parser.add_argument('--lr', type=float, default=1e-3,
                         help='Learning rate.')
-    parser.add_argument('--n_epoch', type=int, default=1000,
+    parser.add_argument('--n_epoch', type=int, default=10,
                         help='Number of epoch.')
     parser.add_argument('--stopping_steps', type=int, default=10,
                         help='Number of epoch for early stopping')
