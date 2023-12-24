@@ -1,9 +1,6 @@
 import gzip
 import pandas as pd
-import pickle
 from tqdm import *
-
-#movie_id to movie_entity
 movie_entity = {}
 with open('douban2fb.txt', 'rb') as f:
     for line in f:
@@ -13,23 +10,16 @@ with open('douban2fb.txt', 'rb') as f:
 
 Graph=pd.DataFrame({"head_entity":[],"relation":[],"tail_entity":[]})
 
-#first jump
-# debug=0
 cons_str=r"<http://rdf.freebase.com/ns/"
 with gzip.open('freebase_douban.gz', 'rb') as f:
     for line in tqdm(f):
-        # debug = debug +1
-        #print(debug)
         line = line.strip()
         list = line.decode().split('\t')[:3]
         if(cons_str not in list[0]) or (cons_str not in list[2]):
             continue
         head = list[0][len(cons_str):].strip('>')
         if head in movie_entity.keys():
-            #print("Find one!")
             Graph.loc[len(Graph)]=list
-        # if(debug == 10000000):
-        #     break
 delete_line=[]
 head_count=Graph["head_entity"].value_counts()
 tail_count=Graph["tail_entity"].value_counts()
@@ -78,6 +68,7 @@ for relation in Graph["relation"]:
 Graph.drop(index=delete_line,axis=0,inplace=True)
 Graph.reset_index(drop=True, inplace=True)
 
+Graph.to_csv("firstjump.csv")
 cons_str=r"<http://rdf.freebase.com/ns/"
 
 Graph=pd.read_csv(filepath_or_buffer="firstjump.csv",usecols=["head_entity","relation","tail_entity"])
@@ -136,9 +127,6 @@ for ett in entity:
 for rel in relation:
     if(relation[rel]<50):
         delete_relation.append(rel)
-
-#print(len(relation),len(delete_relation))
-print(len(entity),len(delete_entity))
         
 entity={}
 relation={}
@@ -164,32 +152,17 @@ with gzip.open('secondjump.gz','rb') as f:
             entity[list[2]]=entity[list[2]]+1
         else:
             entity[list[2]]=1
-        #print("hello")
         
-# 然后再采样 20 核的设置，同时只保留出现大于50次的关系，对两跳子图进行清洗
 need_entity=[]
 need_relation=[]
 for ett in entity:
-    if(entity[ett]>=20):
+    if(entity[ett]>=15):
         need_entity.append(ett)
         
 for rel in relation:
     if(relation[rel]>50):
         need_relation.append(rel)
 
-print(len(entity),len(need_entity),len(relation),len(need_relation))
-
-with open("need_ett","wb") as tf:
-    pickle.dump(need_entity, tf)
-    
-with open("need_rel","wb") as tf:
-    pickle.dump(need_relation, tf)
-    
-with open("need_ett","rb") as tf:
-    need_entity=pickle.load(tf)
-
-with open("need_rel","rb") as tf:
-    need_relation=pickle.load(tf)
     
 i=0
 count = 0
@@ -209,8 +182,5 @@ with gzip.open('secondjump.gz','rb') as f:
             #print(count)
             Graph_2jump.loc[len(Graph_2jump)] = list
             count=count+1
-Graph_2jump.to_csv("secondjump.csv",mode='w')
-#print(count)
 
-Graph_2jump=pd.read_csv(filepath_or_buffer="secondjump.csv")
 Graph_2jump.to_csv("Graph.csv",mode='a',header=False,index=False)
